@@ -6,8 +6,7 @@ export function authenticateApiKey(
   next: NextFunction
 ): void {
   if (req.method === "OPTIONS") {
-    res.sendStatus(200);
-    return;
+    return next();
   }
 
   const authHeader = req.headers["authorization"];
