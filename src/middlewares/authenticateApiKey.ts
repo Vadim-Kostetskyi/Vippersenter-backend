@@ -10,7 +10,6 @@ export function authenticateApiKey(
   }
 
   const authHeader = req.headers["authorization"];
-
   if (!authHeader || authHeader !== `Bearer ${process.env.API_KEY}`) {
     res.status(401).json({ message: "Unauthorized" });
     return;
