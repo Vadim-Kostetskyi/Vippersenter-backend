@@ -5,6 +5,11 @@ export function authenticateApiKey(
   res: Response,
   next: NextFunction
 ): void {
+  if (req.method === "OPTIONS") {
+    res.sendStatus(200);
+    return;
+  }
+
   const authHeader = req.headers["authorization"];
 
   if (!authHeader || authHeader !== `Bearer ${process.env.API_KEY}`) {
