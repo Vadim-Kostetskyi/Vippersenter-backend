@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm ci --omit=none && tsc",
+    "build": "tsc",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
