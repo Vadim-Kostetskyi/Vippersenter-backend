@@ -1,10 +1,21 @@
-import { Router } from "express";
-import { ProductModel } from "../models/Product";
-const router = Router();
-router.get("/products", async (req, res) => {
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const Product_1 = require("../models/Product");
+const router = (0, express_1.Router)();
+router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { type } = req.query;
     const filter = type ? { type } : {};
-    const products = await ProductModel.find(filter);
+    const products = yield Product_1.ProductModel.find(filter);
     res.json(products);
-});
-export default router;
+}));
+exports.default = router;
