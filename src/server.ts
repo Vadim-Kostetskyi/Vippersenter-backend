@@ -12,14 +12,14 @@ const PORT = process.env.PORT || 3000;
 
 mongoose.connect(process.env.MONGO_URI!);
 
-app.options(
-  "*",
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+const corsOptions = {
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use("/api/v1", authenticateApiKey, productsRouter);
