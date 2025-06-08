@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Product_1 = require("../models/Product");
 const router = (0, express_1.Router)();
-router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { type } = req.query;
     const filter = type ? { type } : {};
     const products = yield Product_1.ProductModel.find(filter);
