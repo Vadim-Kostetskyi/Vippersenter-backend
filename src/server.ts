@@ -23,6 +23,7 @@ mongoose
 const allowedOrigins = [
   "http://localhost:5173",
   "https://vippersenter-2gzyklopx-vadim-kostetskyis-projects.vercel.app",
+  "https://vippersenter-git-main-vadim-kostetskyis-projects.vercel.app",
 ];
 
 const corsOptions = {
