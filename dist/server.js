@@ -24,6 +24,7 @@ mongoose_1.default
 const allowedOrigins = [
     "http://localhost:5173",
     "https://vippersenter-2gzyklopx-vadim-kostetskyis-projects.vercel.app",
+    "https://vippersenter-git-main-vadim-kostetskyis-projects.vercel.app",
 ];
 const corsOptions = {
     origin: (origin, callback) => {
@@ -39,6 +40,7 @@ const corsOptions = {
     allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.use((0, cors_1.default)(corsOptions));
+app.options("*", (0, cors_1.default)(corsOptions));
 app.use((0, express_session_1.default)({
     secret: "secret-word",
     name: "session-id",
