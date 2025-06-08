@@ -11,7 +11,7 @@ const express_session_1 = __importDefault(require("express-session"));
 const passport_1 = __importDefault(require("passport"));
 require("./config/config-passport");
 const authRouter_1 = __importDefault(require("./routes/authRouter"));
-const products_1 = __importDefault(require("./routes/products"));
+const productsRouter_1 = __importDefault(require("./routes/productsRouter"));
 const authenticateApiKey_1 = require("./middlewares/authenticateApiKey");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -54,7 +54,7 @@ app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 app.use(express_1.default.json());
 app.use("/api/v1", authRouter_1.default);
-app.use("/api/v1", authenticateApiKey_1.authenticateApiKey, products_1.default);
+app.use("/api/v1", authenticateApiKey_1.authenticateApiKey, productsRouter_1.default);
 app.listen(PORT, () => {
     console.log(`🚀 Server running`);
 });

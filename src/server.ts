@@ -6,8 +6,7 @@ import session from "express-session";
 import passport from "passport";
 import "./config/config-passport";
 import authRouter from "./routes/authRouter";
-
-import productsRouter from "./routes/products";
+import productsRouter from "./routes/productsRouter";
 import { authenticateApiKey } from "./middlewares/authenticateApiKey";
 
 dotenv.config();
