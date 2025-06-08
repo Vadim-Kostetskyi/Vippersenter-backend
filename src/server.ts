@@ -21,8 +21,22 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://vippersenter-2gzyklopx-vadim-kostetskyis-projects.vercel.app",
+];
+
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: (
+    origin: string | undefined,
+    callback: (err: any, allow?: boolean) => void
+  ) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
