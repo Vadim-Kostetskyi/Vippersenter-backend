@@ -7,7 +7,7 @@ import passport from "passport";
 import "./config/config-passport";
 import authRouter from "./routes/authRouter";
 import productsRouter from "./routes/productsRouter";
-import { authenticateApiKey } from "./middlewares/authenticateApiKey";
+// import { authenticateApiKey } from "./middlewares/authenticateApiKey";
 
 dotenv.config();
 
@@ -64,7 +64,7 @@ app.use(passport.session());
 
 app.use(express.json());
 app.use("/api/v1", authRouter);
-app.use("/api/v1", authenticateApiKey, productsRouter);
+app.use("/api/v1", productsRouter);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running`);
