@@ -38,8 +38,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const AttributeSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     values: { type: [String], required: true },
-}, { _id: false } // Не створювати окремий _id для кожного attribute
-);
+}, { _id: false });
 const ProductSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     price: { type: Number, required: true },
@@ -47,6 +46,6 @@ const ProductSchema = new mongoose_1.Schema({
     quantity: { type: Number, required: true },
     description: { type: [String], required: true },
     image: { type: String, required: true },
-    attributes: { type: [AttributeSchema], default: [] }, // ✅ масив об'єктів
+    attributes: { type: [AttributeSchema], default: [] },
 });
 exports.ProductModel = mongoose_1.default.model("Product", ProductSchema, "product");

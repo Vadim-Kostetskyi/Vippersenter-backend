@@ -49,7 +49,8 @@ router.get("/product/:id", (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const product = yield Product_1.ProductModel.findById(req.params.id);
         if (!product) {
-            return res.status(404).json({ error: "Product not found" });
+            res.status(404).json({ error: "Product not found" });
+            return;
         }
         let transformedProduct = product.toObject();
         if (product.attributes &&
