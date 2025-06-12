@@ -16,10 +16,24 @@ router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function
     const { type } = req.query;
     const filter = type ? { type } : {};
     const products = yield Product_1.ProductModel.find(filter);
-    res.json(products);
+    const transformedProducts = products.map((product) => {
+        if (product.attributes &&
+            !Array.isArray(product.attributes) &&
+            typeof product.attributes === "object") {
+            const attributesObj = product.attributes;
+            const converted = Object.entries(attributesObj)
+                .filter(([_, values]) => Array.isArray(values))
+                .map(([name, values]) => ({
+                name,
+                values: values,
+            }));
+            return Object.assign(Object.assign({}, product.toObject()), { attributes: converted });
+        }
+        return product;
+    });
+    res.json(transformedProducts);
 }));
 router.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(111);
     try {
         const newProduct = new Product_1.ProductModel(req.body);
         const savedProduct = yield newProduct.save();
@@ -29,7 +43,31 @@ router.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, functio
         res
             .status(400)
             .json({ error: "Failed to create a product", details: error });
-        console.log("POST body:", req.body);
+    }
+}));
+router.get("/product/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const product = yield Product_1.ProductModel.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        let transformedProduct = product.toObject();
+        if (product.attributes &&
+            !Array.isArray(product.attributes) &&
+            typeof product.attributes === "object") {
+            const attributesObj = product.attributes;
+            const converted = Object.entries(attributesObj)
+                .filter(([_, values]) => Array.isArray(values))
+                .map(([name, values]) => ({
+                name,
+                values: values,
+            }));
+            transformedProduct.attributes = converted;
+        }
+        res.json(transformedProduct);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Server error", details: error });
     }
 }));
 exports.default = router;

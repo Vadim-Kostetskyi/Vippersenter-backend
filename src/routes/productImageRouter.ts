@@ -16,7 +16,6 @@ router.post("/images/upload", upload.single("image"), (req, res) => {
     contentType: req.file.mimetype,
   });
 
-  // Стрім з пам'яті multer файлу в GridFS
   uploadStream.end(req.file.buffer);
 
   uploadStream.on("error", (error) => {
@@ -25,7 +24,7 @@ router.post("/images/upload", upload.single("image"), (req, res) => {
 
   uploadStream.on("finish", () => {
     res.status(201).json({
-      imageUrl: `/api/v1/images/${uploadStream.id}`, // айдішник файлу у GridFS
+      imageUrl: `/api/v1/images/${uploadStream.id}`,
       filename: req.file!.originalname,
     });
   });

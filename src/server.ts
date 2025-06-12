@@ -28,7 +28,6 @@ export let bucket: mongoose.mongo.GridFSBucket;
     bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db!, {
       bucketName: "image",
     });
-    console.log(bucket); // тепер bucket не undefined
   });
 })();
 

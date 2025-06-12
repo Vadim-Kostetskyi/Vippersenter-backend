@@ -27,7 +27,6 @@ mongoose_1.default
         exports.bucket = new mongoose_1.default.mongo.GridFSBucket(mongoose_1.default.connection.db, {
             bucketName: "image",
         });
-        console.log(exports.bucket); // тепер bucket не undefined
     });
 })();
 const allowedOrigins = [

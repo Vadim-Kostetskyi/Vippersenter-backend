@@ -52,3 +52,4 @@ const uploadToGCS = (file) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.uploadToGCS = uploadToGCS;
+//del

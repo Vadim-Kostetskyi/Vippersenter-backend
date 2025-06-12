@@ -6,7 +6,6 @@ mongoose.connection.once("open", () => {
   const db = mongoose.connection.db;
   if (db) {
     gfs = new mongoose.mongo.GridFSBucket(db, { bucketName: "uploads" });
-    console.log("GridFSBucket initialized");
   } else {
     console.error("MongoDB connection db is undefined");
   }

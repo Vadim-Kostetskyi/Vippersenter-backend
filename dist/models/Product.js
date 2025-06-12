@@ -35,6 +35,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
+const AttributeSchema = new mongoose_1.Schema({
+    name: { type: String, required: true },
+    values: { type: [String], required: true },
+}, { _id: false } // Не створювати окремий _id для кожного attribute
+);
 const ProductSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     price: { type: Number, required: true },
@@ -42,11 +47,6 @@ const ProductSchema = new mongoose_1.Schema({
     quantity: { type: Number, required: true },
     description: { type: [String], required: true },
     image: { type: String, required: true },
-    attributes: {
-        lines: [String],
-        curl: [String],
-        length: [String],
-        thickness: [String],
-    },
+    attributes: { type: [AttributeSchema], default: [] }, // ✅ масив об'єктів
 });
 exports.ProductModel = mongoose_1.default.model("Product", ProductSchema, "product");

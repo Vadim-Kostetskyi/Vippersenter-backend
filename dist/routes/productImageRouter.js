@@ -17,7 +17,7 @@ const express_1 = require("express");
 const server_1 = require("../server");
 const mongoose_1 = __importDefault(require("mongoose"));
 const router = (0, express_1.Router)();
-const upload = (0, multer_1.default)(); // без diskStorage, щоб multer не зберігав локально
+const upload = (0, multer_1.default)();
 router.post("/images/upload", upload.single("image"), (req, res) => {
     if (!req.file) {
         res.status(400).json({ message: "No file uploaded" });
@@ -26,14 +26,13 @@ router.post("/images/upload", upload.single("image"), (req, res) => {
     const uploadStream = server_1.bucket.openUploadStream(req.file.originalname, {
         contentType: req.file.mimetype,
     });
-    // Стрім з пам'яті multer файлу в GridFS
     uploadStream.end(req.file.buffer);
     uploadStream.on("error", (error) => {
         res.status(500).json({ message: "Error uploading file", error });
     });
     uploadStream.on("finish", () => {
         res.status(201).json({
-            imageUrl: `/api/v1/images/${uploadStream.id}`, // айдішник файлу у GridFS
+            imageUrl: `/api/v1/images/${uploadStream.id}`,
             filename: req.file.originalname,
         });
     });

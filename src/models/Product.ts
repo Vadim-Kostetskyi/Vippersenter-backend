@@ -1,5 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+interface Attribute {
+  name: string;
+  values: string[];
+}
+
 interface IProduct extends Document {
   name: string;
   price: number;
@@ -7,13 +12,16 @@ interface IProduct extends Document {
   quantity: number;
   description: string[];
   image: string;
-  attributes?: {
-    lines?: string[];
-    curl?: string[];
-    length?: string[];
-    thickness?: string[];
-  };
+  attributes?: Attribute[];
 }
+
+const AttributeSchema = new Schema<Attribute>(
+  {
+    name: { type: String, required: true },
+    values: { type: [String], required: true },
+  },
+  { _id: false }
+);
 
 const ProductSchema = new Schema<IProduct>({
   name: { type: String, required: true },
@@ -22,12 +30,7 @@ const ProductSchema = new Schema<IProduct>({
   quantity: { type: Number, required: true },
   description: { type: [String], required: true },
   image: { type: String, required: true },
-  attributes: {
-    lines: [String],
-    curl: [String],
-    length: [String],
-    thickness: [String],
-  },
+  attributes: { type: [AttributeSchema], default: [] },
 });
 
 export const ProductModel = mongoose.model<IProduct>(

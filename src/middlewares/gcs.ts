@@ -2,7 +2,6 @@
 import multer from "multer";
 import { Storage } from "@google-cloud/storage";
 import path from "path";
-import { Request } from "express";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -43,3 +42,5 @@ async function uploadToGCS(
 }
 
 export { upload, uploadToGCS };
+
+//del
