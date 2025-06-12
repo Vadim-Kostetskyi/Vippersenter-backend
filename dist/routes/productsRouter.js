@@ -18,4 +18,18 @@ router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function
     const products = yield Product_1.ProductModel.find(filter);
     res.json(products);
 }));
+router.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(111);
+    try {
+        const newProduct = new Product_1.ProductModel(req.body);
+        const savedProduct = yield newProduct.save();
+        res.status(201).json(savedProduct);
+    }
+    catch (error) {
+        res
+            .status(400)
+            .json({ error: "Failed to create a product", details: error });
+        console.log("POST body:", req.body);
+    }
+}));
 exports.default = router;

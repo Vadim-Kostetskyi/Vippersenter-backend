@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.bucket = void 0;
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -12,7 +13,7 @@ const passport_1 = __importDefault(require("passport"));
 require("./config/config-passport");
 const authRouter_1 = __importDefault(require("./routes/authRouter"));
 const productsRouter_1 = __importDefault(require("./routes/productsRouter"));
-const authenticateApiKey_1 = require("./middlewares/authenticateApiKey");
+const productImageRouter_1 = __importDefault(require("./routes/productImageRouter"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,14 @@ mongoose_1.default
     .connect(dbHost)
     .then(() => console.log("MongoDB connected"))
     .catch((err) => console.error("MongoDB connection error:", err));
+(() => {
+    mongoose_1.default.connection.on("connected", () => {
+        exports.bucket = new mongoose_1.default.mongo.GridFSBucket(mongoose_1.default.connection.db, {
+            bucketName: "image",
+        });
+        console.log(exports.bucket); // тепер bucket не undefined
+    });
+})();
 const allowedOrigins = [
     "http://localhost:5173",
     "https://vippersenter-2gzyklopx-vadim-kostetskyis-projects.vercel.app",
@@ -56,7 +65,8 @@ app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 app.use(express_1.default.json());
 app.use("/api/v1", authRouter_1.default);
-app.use("/api/v1", authenticateApiKey_1.authenticateApiKey, productsRouter_1.default);
+app.use("/api/v1", productImageRouter_1.default);
+app.use("/api/v1", productsRouter_1.default);
 app.listen(PORT, () => {
     console.log(`🚀 Server running`);
 });
