@@ -4,7 +4,7 @@ import { bucket } from "../server";
 import mongoose from "mongoose";
 
 const router = Router();
-const upload = multer(); // без diskStorage, щоб multer не зберігав локально
+const upload = multer();
 
 router.post("/images/upload", upload.single("image"), (req, res) => {
   if (!req.file) {

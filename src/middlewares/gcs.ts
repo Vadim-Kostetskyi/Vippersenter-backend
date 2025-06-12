@@ -3,7 +3,6 @@ import multer from "multer";
 import { Storage } from "@google-cloud/storage";
 import path from "path";
 import { Request } from "express";
-import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
 
 dotenv.config();
