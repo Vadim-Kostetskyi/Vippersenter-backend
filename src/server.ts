@@ -54,7 +54,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options(/(.*)/, cors(corsOptions));
+app.options("/{*splat}", cors(corsOptions));
 
 app.use(
   session({
