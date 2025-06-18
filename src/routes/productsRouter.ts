@@ -1,47 +1,55 @@
 import { Router } from "express";
 import { ProductModel } from "../models/Product";
+import { buildProductFilter } from "../utils/queryFilterBuilder";
 
 const router = Router();
 
 router.get("/products", async (req, res) => {
-  const { type } = req.query;
-  const filter = type ? { type } : {};
-  const products = await ProductModel.find(filter);
+  const { type, random, newProduct, popularProduct, category, search } =
+    req.query;
 
-  const transformedProducts = products.map((product) => {
-    if (
-      product.attributes &&
-      !Array.isArray(product.attributes) &&
-      typeof product.attributes === "object"
-    ) {
-      const attributesObj = product.attributes;
-      const converted = Object.entries(attributesObj)
-        .filter(([_, values]) => Array.isArray(values))
-        .map(([name, values]) => ({
-          name,
-          values: values as string[],
-        }));
-      return {
-        ...product.toObject(),
-        attributes: converted,
-      };
+  try {
+    const filter = buildProductFilter(req.query);
+
+    if (random === "true") {
+      const matchStage: any = {};
+      const products = await ProductModel.aggregate([
+        { $match: matchStage },
+        { $sample: { size: 3 } },
+      ]);
+      console.log("random:", products);
+
+      res.json(products);
+      return;
     }
 
-    return product;
-  });
+    const products = await ProductModel.find(filter);
 
-  res.json(transformedProducts);
-});
+    const transformedProducts = products.map((product) => {
+      if (
+        product.attributes &&
+        !Array.isArray(product.attributes) &&
+        typeof product.attributes === "object"
+      ) {
+        const attributesObj = product.attributes;
+        const converted = Object.entries(attributesObj)
+          .filter(([_, values]) => Array.isArray(values))
+          .map(([name, values]) => ({
+            name,
+            values: values as string[],
+          }));
+        return {
+          ...product.toObject(),
+          attributes: converted,
+        };
+      }
 
-router.post("/products", async (req, res) => {
-  try {
-    const newProduct = new ProductModel(req.body);
-    const savedProduct = await newProduct.save();
-    res.status(201).json(savedProduct);
+      return product;
+    });
+
+    res.json(transformedProducts);
   } catch (error) {
-    res
-      .status(400)
-      .json({ error: "Failed to create a product", details: error });
+    res.status(500).json({ error: "Failed to fetch products", details: error });
   }
 });
 
