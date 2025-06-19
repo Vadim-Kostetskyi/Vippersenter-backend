@@ -7,7 +7,6 @@ import passport from "passport";
 import "./config/config-passport";
 import authRouter from "./routes/authRouter";
 import productsRouter from "./routes/productsRouter";
-import { authenticateApiKey } from "./middlewares/authenticateApiKey";
 import imageRouter from "./routes/productImageRouter";
 
 dotenv.config();
@@ -32,6 +31,8 @@ export let bucket: mongoose.mongo.GridFSBucket;
 })();
 
 const allowedOrigins = [
+  "http://localhost:3000",
+  "https://vippersenter.no",
   "http://localhost:5173",
   "https://vippersenter-2gzyklopx-vadim-kostetskyis-projects.vercel.app",
   "https://vippersenter-git-main-vadim-kostetskyis-projects.vercel.app",
@@ -49,7 +50,7 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 

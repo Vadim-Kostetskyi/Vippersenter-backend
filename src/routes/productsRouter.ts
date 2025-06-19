@@ -85,4 +85,60 @@ router.get("/product/:id", async (req, res) => {
   }
 });
 
+router.post("/products", async (req, res) => {
+  try {
+    const newProduct = new ProductModel(req.body);
+    const savedProduct = await newProduct.save();
+    res.status(201).json(savedProduct);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ error: "Failed to create a product", details: error });
+  }
+});
+
+router.patch("/products/:id", async (req, res) => {
+  console.log(123);
+
+  try {
+    const { quantity } = req.body;
+    if (typeof quantity !== "number" || quantity < 0) {
+      res.status(400).json({ error: "Invalid quantity" });
+      return;
+    }
+
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      req.params.id,
+      { quantity },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+
+    res.json(updatedProduct);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Failed to update quantity", details: error });
+  }
+});
+
+router.delete("/products/:id", async (req, res) => {
+  try {
+    const deletedProduct = await ProductModel.findByIdAndDelete(req.params.id);
+
+    if (!deletedProduct) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+
+    res.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete product", details: error });
+  }
+});
+
 export default router;
