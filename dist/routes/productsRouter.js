@@ -24,7 +24,6 @@ router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function
                 { $match: matchStage },
                 { $sample: { size: 3 } },
             ]);
-            console.log("random:", products);
             res.json(products);
             return;
         }
@@ -89,7 +88,6 @@ router.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 }));
 router.patch("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(123);
     try {
         const { quantity } = req.body;
         if (typeof quantity !== "number" || quantity < 0) {
@@ -144,7 +142,6 @@ router.post("/order/place", (req, res) => __awaiter(void 0, void 0, void 0, func
             product.quantity -= item.quantity;
             yield product.save();
         }
-        // (Опціонально) Зберегти замовлення в базу
         const newOrder = new Order_1.OrderModel({
             items,
             totalPrice,

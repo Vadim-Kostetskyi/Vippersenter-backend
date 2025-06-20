@@ -15,5 +15,36 @@ function buildProductFilter(query) {
     if (searchStr.trim() !== "") {
         filter.name = { $regex: new RegExp(searchStr, "i") };
     }
+    let attributeQuery = {};
+    if (query.attributes) {
+        try {
+            attributeQuery = JSON.parse(query.attributes);
+        }
+        catch (e) {
+            console.error("Failed to parse attributes JSON:", e);
+            attributeQuery = {};
+        }
+    }
+    console.log("Parsed attributeQuery:", attributeQuery);
+    const attributeKeys = Object.keys(attributeQuery);
+    if (attributeKeys.length > 0) {
+        filter.$and = attributeKeys.map((key) => {
+            const raw = attributeQuery[key];
+            const values = Array.isArray(raw)
+                ? raw
+                : typeof raw === "string"
+                    ? raw.split(",")
+                    : [String(raw)];
+            return {
+                attributes: {
+                    $elemMatch: {
+                        name: key,
+                        values: { $all: values },
+                    },
+                },
+            };
+        });
+    }
+    console.log("Final filter:", filter);
     return filter;
 }
