@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Product_1 = require("../models/Product");
 const queryFilterBuilder_1 = require("../utils/queryFilterBuilder");
+const Order_1 = require("../models/Order");
 const router = (0, express_1.Router)();
 router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { type, random, newProduct, popularProduct, category, search } = req.query;
@@ -119,6 +120,45 @@ router.delete("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, f
     }
     catch (error) {
         res.status(500).json({ error: "Failed to delete product", details: error });
+    }
+}));
+router.post("/order/place", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { items, totalPrice } = req.body;
+        if (!items || !Array.isArray(items) || typeof totalPrice !== "number") {
+            res.status(400).json({ error: "Invalid request body" });
+            return;
+        }
+        for (const item of items) {
+            const product = yield Product_1.ProductModel.findById(item.productId);
+            if (!product) {
+                res.status(404).json({ error: `Product ${item.productId} not found` });
+                return;
+            }
+            if (product.quantity < item.quantity) {
+                res.status(400).json({
+                    error: `Not enough stock for ${product.name}. Available: ${product.quantity}`,
+                });
+                return;
+            }
+            product.quantity -= item.quantity;
+            yield product.save();
+        }
+        // (Опціонально) Зберегти замовлення в базу
+        const newOrder = new Order_1.OrderModel({
+            items,
+            totalPrice,
+            createdAt: new Date(),
+        });
+        yield newOrder.save();
+        console.log("Order total price:", totalPrice);
+        res
+            .status(200)
+            .json({ success: true, message: "Order placed successfully" });
+    }
+    catch (error) {
+        console.error("Order error:", error);
+        res.status(500).json({ error: "Server error" });
     }
 }));
 exports.default = router;

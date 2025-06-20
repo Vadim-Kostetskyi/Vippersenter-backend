@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { ProductModel } from "../models/Product";
 import { buildProductFilter } from "../utils/queryFilterBuilder";
+import { OrderModel } from "../models/Order";
 
 const router = Router();
 
@@ -17,7 +18,6 @@ router.get("/products", async (req, res) => {
         { $match: matchStage },
         { $sample: { size: 3 } },
       ]);
-      console.log("random:", products);
 
       res.json(products);
       return;
@@ -98,8 +98,6 @@ router.post("/products", async (req, res) => {
 });
 
 router.patch("/products/:id", async (req, res) => {
-  console.log(123);
-
   try {
     const { quantity } = req.body;
     if (typeof quantity !== "number" || quantity < 0) {
@@ -138,6 +136,51 @@ router.delete("/products/:id", async (req, res) => {
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to delete product", details: error });
+  }
+});
+
+router.post("/order/place", async (req, res) => {
+  try {
+    const { items, totalPrice } = req.body;
+
+    if (!items || !Array.isArray(items) || typeof totalPrice !== "number") {
+      res.status(400).json({ error: "Invalid request body" });
+      return;
+    }
+
+    for (const item of items) {
+      const product = await ProductModel.findById(item.productId);
+      if (!product) {
+        res.status(404).json({ error: `Product ${item.productId} not found` });
+        return;
+      }
+
+      if (product.quantity < item.quantity) {
+        res.status(400).json({
+          error: `Not enough stock for ${product.name}. Available: ${product.quantity}`,
+        });
+        return;
+      }
+
+      product.quantity -= item.quantity;
+      await product.save();
+    }
+
+    const newOrder = new OrderModel({
+      items,
+      totalPrice,
+      createdAt: new Date(),
+    });
+    await newOrder.save();
+
+    console.log("Order total price:", totalPrice);
+
+    res
+      .status(200)
+      .json({ success: true, message: "Order placed successfully" });
+  } catch (error) {
+    console.error("Order error:", error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
