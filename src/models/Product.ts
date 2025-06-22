@@ -15,6 +15,7 @@ interface IProduct extends Document {
   attributes?: Attribute[];
   newProduct?: boolean;
   popularProduct?: boolean;
+  slug?: string;
 }
 
 const AttributeSchema = new Schema<Attribute>(
@@ -35,6 +36,7 @@ const ProductSchema = new Schema<IProduct>({
   attributes: { type: [AttributeSchema], default: [] },
   newProduct: { type: Boolean },
   popularProduct: { type: Boolean },
+  slug: { type: String, unique: true, sparse: true },
 });
 
 export const ProductModel = mongoose.model<IProduct>(

@@ -25,7 +25,6 @@ function buildProductFilter(query) {
             attributeQuery = {};
         }
     }
-    console.log("Parsed attributeQuery:", attributeQuery);
     const attributeKeys = Object.keys(attributeQuery);
     if (attributeKeys.length > 0) {
         filter.$and = attributeKeys.map((key) => {
@@ -45,6 +44,5 @@ function buildProductFilter(query) {
             };
         });
     }
-    console.log("Final filter:", filter);
     return filter;
 }

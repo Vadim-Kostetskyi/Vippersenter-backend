@@ -49,5 +49,6 @@ const ProductSchema = new mongoose_1.Schema({
     attributes: { type: [AttributeSchema], default: [] },
     newProduct: { type: Boolean },
     popularProduct: { type: Boolean },
+    slug: { type: String, unique: true, sparse: true },
 });
 exports.ProductModel = mongoose_1.default.model("Product", ProductSchema, "product");

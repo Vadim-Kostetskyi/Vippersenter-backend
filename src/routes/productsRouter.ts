@@ -173,14 +173,43 @@ router.post("/order/place", async (req, res) => {
     });
     await newOrder.save();
 
-    console.log("Order total price:", totalPrice);
-
     res
       .status(200)
       .json({ success: true, message: "Order placed successfully" });
   } catch (error) {
     console.error("Order error:", error);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.get("/product/slug/:slug", async (req, res) => {
+  try {
+    const product = await ProductModel.findOne({ slug: req.params.slug });
+    if (!product) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+
+    let transformedProduct = product.toObject();
+
+    if (
+      product.attributes &&
+      !Array.isArray(product.attributes) &&
+      typeof product.attributes === "object"
+    ) {
+      const attributesObj = product.attributes as Record<string, unknown>;
+      const converted = Object.entries(attributesObj)
+        .filter(([_, values]) => Array.isArray(values))
+        .map(([name, values]) => ({
+          name,
+          values: values as string[],
+        }));
+      transformedProduct.attributes = converted;
+    }
+
+    res.json(transformedProduct);
+  } catch (error) {
+    res.status(500).json({ error: "Server error", details: error });
   }
 });
 

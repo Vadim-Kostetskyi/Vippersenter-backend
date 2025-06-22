@@ -148,7 +148,6 @@ router.post("/order/place", (req, res) => __awaiter(void 0, void 0, void 0, func
             createdAt: new Date(),
         });
         yield newOrder.save();
-        console.log("Order total price:", totalPrice);
         res
             .status(200)
             .json({ success: true, message: "Order placed successfully" });
@@ -156,6 +155,32 @@ router.post("/order/place", (req, res) => __awaiter(void 0, void 0, void 0, func
     catch (error) {
         console.error("Order error:", error);
         res.status(500).json({ error: "Server error" });
+    }
+}));
+router.get("/product/slug/:slug", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const product = yield Product_1.ProductModel.findOne({ slug: req.params.slug });
+        if (!product) {
+            res.status(404).json({ error: "Product not found" });
+            return;
+        }
+        let transformedProduct = product.toObject();
+        if (product.attributes &&
+            !Array.isArray(product.attributes) &&
+            typeof product.attributes === "object") {
+            const attributesObj = product.attributes;
+            const converted = Object.entries(attributesObj)
+                .filter(([_, values]) => Array.isArray(values))
+                .map(([name, values]) => ({
+                name,
+                values: values,
+            }));
+            transformedProduct.attributes = converted;
+        }
+        res.json(transformedProduct);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Server error", details: error });
     }
 }));
 exports.default = router;

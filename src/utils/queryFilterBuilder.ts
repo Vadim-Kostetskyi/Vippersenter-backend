@@ -21,8 +21,6 @@ export function buildProductFilter(query: any) {
     }
   }
 
-  console.log("Parsed attributeQuery:", attributeQuery);
-
   const attributeKeys = Object.keys(attributeQuery);
 
   if (attributeKeys.length > 0) {
@@ -44,8 +42,6 @@ export function buildProductFilter(query: any) {
       };
     });
   }
-
-  console.log("Final filter:", filter);
 
   return filter;
 }
