@@ -49,39 +49,44 @@ router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).json({ error: "Failed to fetch products", details: error });
     }
 }));
-router.get("/product/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const product = yield Product_1.ProductModel.findById(req.params.id);
-        if (!product) {
-            res.status(404).json({ error: "Product not found" });
+        const filter = (0, queryFilterBuilder_1.buildProductFilter)(req.query);
+        if (req.query.random === "true") {
+            const products = yield Product_1.ProductModel.aggregate([
+                { $match: {} },
+                { $sample: { size: 3 } },
+            ]);
+            res.json(products);
             return;
         }
-        let transformedProduct = product.toObject();
-        if (product.attributes &&
-            !Array.isArray(product.attributes) &&
-            typeof product.attributes === "object") {
-            const attributesObj = product.attributes;
-            const converted = Object.entries(attributesObj)
-                .filter(([_, values]) => Array.isArray(values))
-                .map(([name, values]) => ({
-                name,
-                values: values,
-            }));
-            transformedProduct.attributes = converted;
-        }
-        res.json(transformedProduct);
+        const products = yield Product_1.ProductModel.find(filter);
+        res.json(products);
     }
     catch (error) {
-        res.status(500).json({ error: "Server error", details: error });
+        res.status(500).json({ error: "Failed to fetch products", details: error });
     }
 }));
+// router.post("/products", async (req, res) => {
+//   try {
+//     const newProduct = new ProductModel(req.body);
+//     const savedProduct = await newProduct.save();
+//     res.status(201).json(savedProduct);
+//   } catch (error) {
+//     res
+//       .status(400)
+//       .json({ error: "Failed to create a product", details: error });
+//   }
+// });
 router.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log("POSTED PRODUCT:", req.body); // <== додай це
         const newProduct = new Product_1.ProductModel(req.body);
         const savedProduct = yield newProduct.save();
         res.status(201).json(savedProduct);
     }
     catch (error) {
+        console.error("CREATE ERROR:", error); // <== покажи точну причину
         res
             .status(400)
             .json({ error: "Failed to create a product", details: error });
@@ -164,20 +169,22 @@ router.get("/product/slug/:slug", (req, res) => __awaiter(void 0, void 0, void 0
             res.status(404).json({ error: "Product not found" });
             return;
         }
-        let transformedProduct = product.toObject();
-        if (product.attributes &&
-            !Array.isArray(product.attributes) &&
-            typeof product.attributes === "object") {
-            const attributesObj = product.attributes;
-            const converted = Object.entries(attributesObj)
-                .filter(([_, values]) => Array.isArray(values))
-                .map(([name, values]) => ({
-                name,
-                values: values,
-            }));
-            transformedProduct.attributes = converted;
-        }
-        res.json(transformedProduct);
+        // let transformedProduct = product.toObject();
+        // if (
+        //   product.attributes &&
+        //   !Array.isArray(product.attributes) &&
+        //   typeof product.attributes === "object"
+        // ) {
+        //   const attributesObj = product.attributes as Record<string, unknown>;
+        //   const converted = Object.entries(attributesObj)
+        //     .filter(([_, values]) => Array.isArray(values))
+        //     .map(([name, values]) => ({
+        //       name,
+        //       values: values as string[],
+        //     }));
+        //   transformedProduct.attributes = converted;
+        // }
+        res.json(product);
     }
     catch (error) {
         res.status(500).json({ error: "Server error", details: error });

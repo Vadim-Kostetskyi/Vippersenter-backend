@@ -53,35 +53,23 @@ router.get("/products", async (req, res) => {
   }
 });
 
-router.get("/product/:id", async (req, res) => {
+router.get("/products", async (req, res) => {
   try {
-    const product = await ProductModel.findById(req.params.id);
+    const filter = buildProductFilter(req.query);
 
-    if (!product) {
-      res.status(404).json({ error: "Product not found" });
+    if (req.query.random === "true") {
+      const products = await ProductModel.aggregate([
+        { $match: {} },
+        { $sample: { size: 3 } },
+      ]);
+      res.json(products);
       return;
     }
 
-    let transformedProduct = product.toObject();
-
-    if (
-      product.attributes &&
-      !Array.isArray(product.attributes) &&
-      typeof product.attributes === "object"
-    ) {
-      const attributesObj = product.attributes;
-      const converted = Object.entries(attributesObj)
-        .filter(([_, values]) => Array.isArray(values))
-        .map(([name, values]) => ({
-          name,
-          values: values as string[],
-        }));
-      transformedProduct.attributes = converted;
-    }
-
-    res.json(transformedProduct);
+    const products = await ProductModel.find(filter);
+    res.json(products);
   } catch (error) {
-    res.status(500).json({ error: "Server error", details: error });
+    res.status(500).json({ error: "Failed to fetch products", details: error });
   }
 });
 
@@ -190,24 +178,24 @@ router.get("/product/slug/:slug", async (req, res) => {
       return;
     }
 
-    let transformedProduct = product.toObject();
+    // let transformedProduct = product.toObject();
 
-    if (
-      product.attributes &&
-      !Array.isArray(product.attributes) &&
-      typeof product.attributes === "object"
-    ) {
-      const attributesObj = product.attributes as Record<string, unknown>;
-      const converted = Object.entries(attributesObj)
-        .filter(([_, values]) => Array.isArray(values))
-        .map(([name, values]) => ({
-          name,
-          values: values as string[],
-        }));
-      transformedProduct.attributes = converted;
-    }
+    // if (
+    //   product.attributes &&
+    //   !Array.isArray(product.attributes) &&
+    //   typeof product.attributes === "object"
+    // ) {
+    //   const attributesObj = product.attributes as Record<string, unknown>;
+    //   const converted = Object.entries(attributesObj)
+    //     .filter(([_, values]) => Array.isArray(values))
+    //     .map(([name, values]) => ({
+    //       name,
+    //       values: values as string[],
+    //     }));
+    //   transformedProduct.attributes = converted;
+    // }
 
-    res.json(transformedProduct);
+    res.json(product);
   } catch (error) {
     res.status(500).json({ error: "Server error", details: error });
   }

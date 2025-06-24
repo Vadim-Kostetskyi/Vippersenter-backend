@@ -1,8 +1,13 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+interface AttributeValue {
+  attributeName: string;
+  extraPrice: string;
+}
+
 interface Attribute {
   name: string;
-  values: string[];
+  values: AttributeValue[];
 }
 
 interface IProduct extends Document {
@@ -18,10 +23,18 @@ interface IProduct extends Document {
   slug?: string;
 }
 
+const AttributeValueSchema = new Schema<AttributeValue>(
+  {
+    attributeName: { type: String, required: true },
+    extraPrice: { type: String, default: "0" },
+  },
+  { _id: false }
+);
+
 const AttributeSchema = new Schema<Attribute>(
   {
     name: { type: String, required: true },
-    values: { type: [String], required: true },
+    values: { type: [AttributeValueSchema], required: true },
   },
   { _id: false }
 );
