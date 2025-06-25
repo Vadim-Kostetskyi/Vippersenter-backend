@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 interface AttributeValue {
   attributeName: string;
   extraPrice: string;
+  quantity: number;
 }
 
 interface Attribute {
@@ -27,6 +28,7 @@ const AttributeValueSchema = new Schema<AttributeValue>(
   {
     attributeName: { type: String, required: true },
     extraPrice: { type: String, default: "0" },
+    quantity: { type: Number, default: 0 },
   },
   { _id: false }
 );

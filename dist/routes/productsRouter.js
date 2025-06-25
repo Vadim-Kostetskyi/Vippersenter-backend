@@ -67,26 +67,13 @@ router.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).json({ error: "Failed to fetch products", details: error });
     }
 }));
-// router.post("/products", async (req, res) => {
-//   try {
-//     const newProduct = new ProductModel(req.body);
-//     const savedProduct = await newProduct.save();
-//     res.status(201).json(savedProduct);
-//   } catch (error) {
-//     res
-//       .status(400)
-//       .json({ error: "Failed to create a product", details: error });
-//   }
-// });
 router.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("POSTED PRODUCT:", req.body); // <== додай це
         const newProduct = new Product_1.ProductModel(req.body);
         const savedProduct = yield newProduct.save();
         res.status(201).json(savedProduct);
     }
     catch (error) {
-        console.error("CREATE ERROR:", error); // <== покажи точну причину
         res
             .status(400)
             .json({ error: "Failed to create a product", details: error });
@@ -94,22 +81,38 @@ router.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 router.patch("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { quantity } = req.body;
+        const { quantity, attributeName } = req.body;
         if (typeof quantity !== "number" || quantity < 0) {
-            res.status(400).json({ error: "Invalid quantity" });
-            return;
+            return res.status(400).json({ error: "Invalid quantity" });
         }
-        const updatedProduct = yield Product_1.ProductModel.findByIdAndUpdate(req.params.id, { quantity }, { new: true });
-        if (!updatedProduct) {
-            res.status(404).json({ error: "Product not found" });
-            return;
+        if (typeof attributeName !== "string" || attributeName.trim() === "") {
+            return res.status(400).json({ error: "Invalid attributeName" });
         }
-        res.json(updatedProduct);
+        // Знаходимо продукт за id
+        const product = yield Product_1.ProductModel.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        // Знаходимо атрибут і його значення з потрібним attributeName
+        let updated = false;
+        product.attributes.forEach((attr) => {
+            attr.values.forEach((val) => {
+                if (val.attributeName === attributeName) {
+                    val.quantity = quantity; // Оновлюємо кількість
+                    updated = true;
+                }
+            });
+        });
+        if (!updated) {
+            return res.status(404).json({ error: "Attribute value not found" });
+        }
+        yield product.save();
+        res.json(product);
     }
     catch (error) {
         res
             .status(500)
-            .json({ error: "Failed to update quantity", details: error });
+            .json({ error: "Failed to update quantity", details: error.message });
     }
 }));
 router.delete("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

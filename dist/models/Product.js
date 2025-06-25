@@ -38,6 +38,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const AttributeValueSchema = new mongoose_1.Schema({
     attributeName: { type: String, required: true },
     extraPrice: { type: String, default: "0" },
+    quantity: { type: Number, default: 0 },
 }, { _id: false });
 const AttributeSchema = new mongoose_1.Schema({
     name: { type: String, required: true },

@@ -87,24 +87,41 @@ router.post("/products", async (req, res) => {
 
 router.patch("/products/:id", async (req, res) => {
   try {
-    const { quantity } = req.body;
+    const { quantity, attributeName } = req.body;
+
     if (typeof quantity !== "number" || quantity < 0) {
       res.status(400).json({ error: "Invalid quantity" });
       return;
     }
+    if (typeof attributeName !== "string" || attributeName.trim() === "") {
+      res.status(400).json({ error: "Invalid attributeName" });
+      return;
+    }
 
-    const updatedProduct = await ProductModel.findByIdAndUpdate(
-      req.params.id,
-      { quantity },
-      { new: true }
-    );
-
-    if (!updatedProduct) {
+    const product = await ProductModel.findById(req.params.id);
+    if (!product) {
       res.status(404).json({ error: "Product not found" });
       return;
     }
 
-    res.json(updatedProduct);
+    let updated = false;
+    product.attributes?.forEach((attr) => {
+      attr.values.forEach((val) => {
+        if (val.attributeName === attributeName) {
+          val.quantity = quantity;
+          updated = true;
+        }
+      });
+    });
+
+    if (!updated) {
+      res.status(404).json({ error: "Attribute value not found" });
+      return;
+    }
+
+    await product.save();
+
+    res.json(product);
   } catch (error) {
     res
       .status(500)
